@@ -19,6 +19,10 @@ Este projeto é uma automação em Python que realiza o download automático dos
 
 - Realiza o upload de cada arquivo para o serviço 0x0.st, retornando uma URL pública para compartilhamento.
 
+- Opcional: envia alertas por email em caso de erros.
+
+- Exibe alertas gráficos na tela usando tkinter quando erros críticos ocorrem.
+
 
 **Pré-requisitos**
 
@@ -32,7 +36,7 @@ Antes de rodar a automação, é necessário ter instalado:
 
 As bibliotecas Python abaixo:
 
-- pip install selenium requests
+- pip install selenium requests python-dateutil
 
 
 
@@ -48,6 +52,15 @@ Execute o script:
 
 python desafioCONTHABIL-Andre.py
 
+Durante a execução, você será perguntado se deseja receber erros por email:
+Deseja receber erros em uma conta gmail? (s/n):
+Caso selecione "s", informe:
+
+- Email remetente (Gmail)
+
+- Senha de app do Gmail
+
+- Email destinatário
 
 Os arquivos serão:
 
@@ -69,3 +82,46 @@ Python 3
 Selenium WebDriver
 
 Requests
+
+Python-dateutil
+
+Tkinter
+
+SMTP
+
+Tutorial passo a passo de como ativar e gerar uma senha de app no Gmail:
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**Passo 1: Acessar sua Conta Google**
+
+- Abra https://myaccount.google.com/
+
+- Faça login com sua conta do Gmail que deseja usar como remetente.
+
+
+**Passo 2: Ativar a Verificação em Duas Etapas**
+
+- Para gerar senhas de app, a verificação em duas etapas precisa estar ativada:
+
+- No menu lateral, clique em Segurança.
+
+- Em “Acesso ao Google”, encontre Verificação em duas etapas.
+
+- Clique em Configurar e siga os passos para ativar (pode ser via app Google Authenticator ou SMS).
+
+
+**Passo 3: Gerar uma Senha de App**
+
+- Após ativar a verificação em duas etapas, volte à seção Segurança.
+
+- Em “Acesso ao Google”, clique em Senhas de app.
+
+- Faça login novamente se solicitado.
+
+- No menu suspenso Selecionar app, escolha Outro (Personalizado).
+
+- Digite um nome para identificar o app, por exemplo: Automação Selenium.
+
+- Clique em Gerar.
+
+- O Google exibirá uma senha de 16 caracteres. Copie essa senha para usá-la no script.

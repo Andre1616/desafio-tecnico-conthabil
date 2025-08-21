@@ -2,28 +2,84 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 import datetime, time, os, re, requests
+from dateutil.relativedelta import relativedelta
+import smtplib
+from email.mime.text import MIMEText
+import tkinter as tk
+from tkinter import messagebox
+
+receber_email = input("Deseja receber erros em uma conta gmail? (s/n): ").strip().lower() == "s"
+
+if receber_email:
+    remetente = input("Informe um gmail como remetente: ").strip()
+    senha = input("Informe a senha de app: ").strip()
+    destinatario = input("Informe o email destinatário: ").strip()
+
+def alerta(msg):
+    root = tk.Tk()
+    root.withdraw()
+    messagebox.showwarning("Alerta!", msg)
+
+def enviar_email(mensagem):
+    if not receber_email:
+        return
+
+    msg = MIMEText(mensagem)
+    msg["Subject"] = "Ocorreu um erro na Automação Selenium"
+    msg["From"] = remetente
+    msg["To"] = destinatario
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login(remetente, senha)
+            servidor.send_message(msg)
+    except Exception as e:
+        print(f"Erro ao enviar email: {e}")
 
 url ="https://www.natal.rn.gov.br/dom"
 navegador = Firefox()
 navegador.get(url)
 
-ddMes = navegador.find_element(By.NAME, "mes")
-select = Select(ddMes)
+try:
+    ddMes = navegador.find_element(By.NAME, "mes")
+    select = Select(ddMes)
+except Exception:
+    mensagem = "Erro: Elemento selecionar mês não foi localizado na página."
+    alerta(mensagem)
+    enviar_email(mensagem)
+    navegador.quit()
+    exit()
 
 hoje = datetime.datetime.now()
-mesAnterior = hoje.month - 1 if hoje.month > 1 else 12
-ano = hoje.year - 1 if mesAnterior == 12 else hoje.year
+data_anterior = hoje - relativedelta(months=1)
+mesAnterior = data_anterior.month
+ano = data_anterior.year
 
 select.select_by_value(str(mesAnterior).zfill(2))
-btnPesquisar = navegador.find_element(By.XPATH, '/html/body/div[3]/section[2]/div/div/div[1]/div[1]/form/button')
+try:
+    btnPesquisar = navegador.find_element(By.XPATH, '/html/body/div[3]/section[2]/div/div/div[1]/div[1]/form/button')
+except Exception:
+    mensagem = "Erro: Botão 'Pesquisar' não foi localizado na página."
+    alerta(mensagem)
+    enviar_email(mensagem)
+    navegador.quit()
+    exit()
 
 btnPesquisar.click()
 
 time.sleep(1)
 
-ddMostrarRegistros = navegador.find_element(By.XPATH, '/html/body/div[3]/section[2]/div/div/div[1]/div[2]/div/div/div[1]/div[1]/div/label/select')
-select = Select(ddMostrarRegistros)
-select.select_by_value("100")
+try:
+    ddMostrarRegistros = navegador.find_element(By.XPATH, '/html/body/div[3]/section[2]/div/div/div[1]/div[2]/div/div/div[1]/div[1]/div/label/select')
+    select = Select(ddMostrarRegistros)
+except Exception:
+    mensagem = "Erro: Elemento mostrar registros não foi localizado na página."
+    alerta(mensagem)
+    enviar_email(mensagem)
+    navegador.quit()
+    exit()
+
+select.select_by_value("10")
 
 nomeDiretorio = "DOMs " + str(mesAnterior) + "-" + str(ano)
 os.makedirs(nomeDiretorio, exist_ok=True)
@@ -57,6 +113,7 @@ while True:
             print(f"Erro ao baixar {urlArquivo}: {e}")
 
     btnPaginador = navegador.find_elements(By.XPATH, '//ul[@class="pagination"]/li')
+
     paginaAtual = None
 
     for idx, li in enumerate(btnPaginador):
@@ -90,3 +147,5 @@ for caminhoArquivo in arquivosBaixados:
         print(f"Erro HTTP no upload de {os.path.basename(caminhoArquivo)}: {e}")
     except requests.exceptions.RequestException as e:
         print(f"Erro de requisição no upload de {os.path.basename(caminhoArquivo)}: {e}")
+
+alerta("Automação realizada com sucesso!")

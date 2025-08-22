@@ -89,6 +89,11 @@ Tkinter
 
 SMTP
 
+**Resultado da execução**
+
+<img width="1355" height="997" alt="image" src="https://github.com/user-attachments/assets/55edb482-058c-4b5b-be9d-7cc62c0a083a" />
+
+
 Tutorial passo a passo de como ativar e gerar uma senha de app no Gmail:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
